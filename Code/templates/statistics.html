@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Basic -->
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <!-- Mobile Metas -->
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <!-- Site Metas -->
+  <link rel="icon" href="static/images/favicon.png" type="image/gif" />
+  <meta name="keywords" content="" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+
+  <title>Read-Book</title>
+
+  <!-- bootstrap core css -->
+  <link rel="stylesheet" type="text/css" href="static/css/bootstrap.css" />
+  <!-- font awesome style -->
+  <link href="static/css/font-awesome.min.css" rel="stylesheet" />
+
+  <!-- Custom styles for this template -->
+  <link href="static/css/style.css" rel="stylesheet" />
+  <!-- responsive style -->
+  <link href="static/css/responsive.css" rel="stylesheet" />
+  <script src="https://cdn.bootcss.com/echarts/4.8.0/echarts.js"></script>
+
+</head>
+
+<body class="sub_page">
+
+  <div class="hero_area">
+    <!-- header section strats -->
+    <header class="header_section">
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg custom_nav-container ">
+          <a class="navbar-brand" href="/">
+            <span>
+              Read-Book
+            </span>
+          </a>
+
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class=""> </span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link pl-lg-0" href="/">Home </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/books"> Books</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/test">Test</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/statistics"> Statistics </a>
+              </li>
+              {%if status == 0 or status == 1%}
+              <li class="nav-item active">
+                <a class="nav-link" href="/login">Login <span class="sr-only">(current)</span> </a>
+              </li>
+              {%elif status == 2%}
+              <li class="nav-item active">
+                <a class="nav-link" href="/profile">Profile <span class="sr-only">(current)</span> </a>
+              </li>
+              {%endif%}
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <!-- end header section -->
+  </div>
+
+  <!-- blog section -->
+
+  <section class="blog_section layout_padding">
+    <div class="container">
+      {%if anytest == 0%}
+      <div class="heading_container heading_center">
+        <h2>
+          历史数据
+        </h2>
+      </div>
+      <br><br>
+      <div class="row">
+        <div class="g-container">
+          <div id="start" class="g-progress" style="--progress: {{avgAccuracy}}%"></div>
+          <!--<progress value="100" max="100" id="start" ></progress>-->     <!--value="{{percentage}}"-->
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-1">正确率</div>
+        <div class="col-md-10">&nbsp;</div>
+        <div class="col-md-1">错误率</div>
+      </div>
+      <br><br>
+      <div class="row">
+        <div class="col-md-5">
+          <div id="main" style="width: 400px; height: 400px" class="radar"></div>
+        </div>
+        <div class="col-md-7">
+          <div>
+            用户{{username}}：
+          </div>
+          <br>
+          <div>
+            &emsp;您共测试<b>{{times}}</b>次，平均用时<b>{{avgDuration}}</b>，正确率为<b>{{avgAccuracy}}%</b>。最近一次在<b>{{lastTime}}</b>测试，用时<b>{{lastDuration}}</b>，正确率为<b>{{lastAccuracy}}%</b>。
+          </div>
+          <br>
+          <div>
+            &emsp;综合来看，您对总体知识的掌握程度
+            {%if avgAccuracy<60%}
+            <b>仍有待提高。</b>
+            {%elif avgAccuracy<70%}
+            <b>为一般。</b>
+            {%elif avgAccuracy<80%}
+            <b>为较好。</b>
+            {%elif avgAccuracy<90%}
+            <b>为良好。</b>
+            {%else%}
+            <b>为优秀。</b>
+            {%endif%}
+            <br>
+          </div>
+          <div>
+            &emsp;其中，您对各类书籍中人物部分知识掌握程度
+            {%if Testscore[5]<60%}
+            <b>仍有待提高。</b>
+            {%elif Testscore[5]<70%}
+            <b>为一般。</b>
+            {%elif Testscore[5]<80%}
+            <b>为较好。</b>
+            {%elif Testscore[5]<90%}
+            <b>为良好。</b>
+            {%else%}
+            <b>为优秀。</b>
+            {%endif%}
+          </div>
+          <div>
+            &emsp;您对各类书籍作者部分知识掌握程度
+            {%if Testscore[6]<60%}
+            <b>仍有待提高。</b>
+            {%elif Testscore[6]<70%}
+            <b>为一般。</b>
+            {%elif Testscore[6]<80%}
+            <b>为较好。</b>
+            {%elif Testscore[6]<90%}
+            <b>为良好。</b>
+            {%else%}
+            <b>为优秀。</b>
+            {%endif%}
+          </div>
+          <div>
+            &emsp;您对各类书籍主旨部分知识掌握程度
+            {%if Testscore[7]<60%}
+            <b>仍有待提高。</b>
+            {%elif Testscore[7]<70%}
+            <b>为一般。</b>
+            {%elif Testscore[7]<80%}
+            <b>为较好。</b>
+            {%elif Testscore[7]<90%}
+            <b>为良好。</b>
+            {%else%}
+            <b>为优秀。</b>
+            {%endif%}
+          </div>
+          <div>
+            &emsp;您对各类书籍中的情节部分知识掌握程度
+            {%if Testscore[8]<60%}
+            <b>仍有待提高。</b>
+            {%elif Testscore[8]<70%}
+            <b>为一般。</b>
+            {%elif Testscore[8]<80%}
+            <b>为较好。</b>
+            {%elif Testscore[8]<90%}
+            <b>为良好。</b>
+            {%else%}
+            <b>为优秀。</b>
+            {%endif%}
+          </div>
+          <div>
+            &emsp;您对各类书籍中的细节部分知识掌握程度
+            {%if Testscore[9]<60%}
+            <b>仍有待提高。</b>
+            {%elif Testscore[9]<70%}
+            <b>为一般。</b>
+            {%elif Testscore[9]<80%}
+            <b>为较好。</b>
+            {%elif Testscore[9]<90%}
+            <b>为良好。</b>
+            {%else%}
+            <b>为优秀。</b>
+            {%endif%}
+          </div>
+          <br>
+          <div style="font-size:20px;">
+            {%if avgAccuracy<60%}
+            <b>如果不读书，行万里路，也只是个邮差——钱钟书</b>
+            {%elif avgAccuracy<70%}
+            <b>只要打开书，就随时打开了一个崭新的世界——《人民日报》</b>
+            {%elif avgAccuracy<80%}
+            <b>无论是驱赶迷茫，还是对抗平庸，读书都是最简单也最实用的方法</b>
+            {%elif avgAccuracy<90%}
+            <b>世界上任何一个书籍都不能给你带来好运，但他们能让你悄悄地成为自己——赫尔曼·黑塞</b>
+            {%else%}
+            <b>脚步丈量不到的地方，书可以；眼睛到不了的地方，书可以——《人民日报》</b>
+            {%endif%}
+          </div>
+        </div>
+      </div>
+      {%else%}
+      <div class="heading_container heading_center">
+        <h2>
+          您还没有进行过任何测试，请先进行测试，或返回主页
+        </h2>
+      </div>
+      {%endif%}
+    </div>
+  </section>
+
+  <!-- end blog section -->
+
+  <!-- info section -->
+
+  <section class="info_section layout_padding2">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 col-lg-3 info-col">
+          <div class="info_detail">
+            <h4>
+              About Us
+            </h4>
+            <p>
+              Contact us on these social-medias.
+            </p>
+            <div class="info_social">
+              <a href="https://www.facebook.com/profile.php?id=100064520177692">
+                <i class="fa fa-facebook" aria-hidden="true"></i>
+              </a>
+              <a href="https://user.qzone.qq.com/1659455853">
+                <i class="fa fa-qq" aria-hidden="true"></i>
+              </a>
+              <a href="https://github.com/Achinoise1">
+                <i class="fa fa-github" aria-hidden="true"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 info-col">
+          <div class="info_contact">
+            <h4>
+              Address
+            </h4>
+            <div class="contact_link_box">
+              <a href="https://www.zstu.edu.cn/">
+                <i class="fa fa-university" aria-hidden="true"></i>
+                <span>
+                  ZSTU
+                </span>
+              </a>
+
+              <a href="https://github.com/Casta-mere/Read-Book">
+                <i class="fa fa-github" aria-hidden="true"></i>
+                <span>
+                  View our Github page
+                </span>
+              </a>
+              <a href="" style="pointer-events : none">
+                <i class="fa fa-phone" aria-hidden="true"></i>
+                <span>
+                  Call +86 13834230484
+                </span>
+              </a>
+              <a href="" style="pointer-events : none">
+                <i class="fa fa-address-book-o" aria-hidden="true"></i>
+                <span>
+                  E-mail castamego@gmail.com
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3 info-col">
+          <div class="info_contact">
+            <h4>
+              Newsletter
+            </h4>
+            <form action="#">
+              <input type="text" placeholder="Enter email" />
+              <button type="submit" onclick="subscribe()">
+                Subscribe
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- end info section -->
+
+  <!-- footer section -->
+  <footer class="footer_section">
+    <div class="container">
+      <p>
+        &copy; <span id="displayYear"></span> All Rights Reserved By
+        <a href="https://github.com/Casta-mere">Castamere</a>
+      </p>
+    </div>
+  </footer>
+  <!-- footer section -->
+  <script>
+    function subscribe() {
+      alert("Subscribe Success!");
+    }
+  </script>
+
+  <!-- jQery -->
+  <script src="static/js/jquery-3.4.1.min.js"></script>
+  <!-- bootstrap js -->
+  <script src="static/js/bootstrap.js"></script>
+  <!-- custom js -->
+  <script src="static/js/custom.js"></script>
+  <!-- End Google Map -->
+
+  <!--进度条动画-->
+  <script>
+    $(function(){
+      /*$('#start').attr('value')*/
+      $("#start").animate({
+          width:"100%"   /*传进来*/
+      },1000);
+    });
+  </script>
+  {%if anytest==0%}
+  <!--雷达图动画-->
+    <script type="text/javascript">
+      //基于准备好的DOM，初始化ECharts图表
+      var myChart = echarts.init(document.getElementById("main"));
+      //指定图表的配置项和数据
+      var option = {  //指定图表的配置项和数据
+          color: ["rgb(244, 37, 52)", 'rgb(255, 214, 27)'],  //使用自己预定义的颜色
+          backgroundColor: 'rgb(245, 246, 249)',  //rgba设置透明度0.1
+          tooltip: { trigger: 'axis' },  //配置标题组件
+          //配置图例组件
+          legend: { top: '300px', left: 'center', data: ['累计', '最近'] },
+          radar: [  //设置雷达图坐标系组件，只适用于雷达图
+              {
+                  nameGap: 3, shape: 'polygon',  //'polygon'|'circle'
+                  name: {
+                      textStyle: {
+                          fontSize: 13, color: '#fff', backgroundColor: 'rgb(68, 109, 183)',
+                          borderRadius: 3, padding: [2, 2]
+                      }
+                  },
+                  //设置雷达图指示器，指定雷达图中的多个变量
+                  indicator: [{ text: '人物形象', max: 100 },
+                  { text: '作者', max: 100 }, { text: '主旨', max: 100 },
+                  { text: '情节', max: 100 }, { text: '细节', max: 100 }],
+                  center: ['50%', '40%'], radius: 120  //指定第2个雷达图的位置
+              }
+          ],
+          series: [  //配置数据系列
+              {   //设置第2个数据项：小米与苹果
+                  type: 'radar',
+                  tooltip: { trigger: 'item' },
+                  itemStyle: { normal: { areaStyle: { type: 'default' } } },
+                  data: [  //设置第2个数据项的具体数据
+                      { value: [{{Testscore[0]}}, {{Testscore[1]}}, {{Testscore[2]}}, {{Testscore[3]}}, {{Testscore[4]}}], name: '最近' },
+                      { value: [{{Testscore[5]}}, {{Testscore[6]}}, {{Testscore[7]}}, {{Testscore[8]}}, {{Testscore[9]}}], name: '累计' }]
+
+              }]
+      };
+      //使用刚指定的配置项和数据显示图表
+      myChart.setOption(option); 
+    </script>
+  {%endif%}
+
+</body>
+
+</html>
