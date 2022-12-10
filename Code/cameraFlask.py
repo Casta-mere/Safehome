@@ -14,6 +14,7 @@ globals.error = 0
 # register error pw!=pw2--1|not all--2
 globals.retry = 0
 # user info
+# globals.User = {"id":"","name":"","pw":"","gender":"","tele":"","addr":""}
 globals.User = {"id":"","name":"","pw":"","gender":"","tele":"","brief":""}
 # 从test进入
 globals.test = 0
@@ -30,10 +31,30 @@ globals.ctrl=control.control()
 # 选择的内容
 globals.choice = 0
 
+from flask import Flask, render_template, Response
+import cv2
+from server_camera import camera
+ 
+class VideoCamera(object):
+    def __init__(self):
+        self.cap = cv2.VideoCapture(0)
+        self.cap.set(3,1920)
+        self.cap.set(4,1080)
+        
+    
+    def __del__(self):
+        self.cap.release()
+    
+    def get_frame(self):
+        ret,image = self.cap.read()
+        jpeg = cv2.imencode('.jpg', image)
+        return jpeg[1].tobytes()
+
+
 # 主页
 @search.route('/', methods=['GET', 'POST'])
 def index():
-    if globals.status == 1:
+    if globals.status == 1:                                                         #强制登陆后使用
         return redirect(url_for('login'))
     temp=random.randint(0, 200)
     detail=globals.ctrl.get_book_detail_info(temp+1)
@@ -54,6 +75,16 @@ def books():
         book=books
     )
 
+# 设备概览
+# @search.route('/devices', methods=['GET', 'POST'])
+# def devices():
+#     device=globals.ctrl.get_device_info()
+#     return render_template(
+#         'devices.html',
+#         status=globals.status,
+#         device=device
+#     )
+
 # 书籍详情页
 @search.route('/bookDetail/<int:id>', methods=['GET', 'POST'])
 def bookDetail(id):
@@ -69,6 +100,17 @@ def bookDetail(id):
         status=globals.status,
         i=id
     )
+    
+# 设备详情页
+# @search.route('/deviceDetail/<int:id>', methods=['GET', 'POST'])
+# def deviceDetail(id):
+#     detail=globals.ctrl.get_device_detail_info(id+1)
+#     return render_template(
+#         "deviceDetail.html",
+#         detail=detail,
+#         status=globals.status,
+#         i=id
+#     )
 
 # 测试界面
 @search.route('/test', methods=['GET', 'POST'])
@@ -85,6 +127,16 @@ def test():
             'test.html',
             status=globals.status,
             )
+ 
+def gen(camera):
+    while True:
+        frame = camera.get_frame()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+ 
+@search.route('/video_feed')
+def video_feed():
+    return Response(gen(VideoCamera()), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # 书籍详情页进入测试        
 @search.route('/testID/<int:id>',methods=['GET', 'POST'])
