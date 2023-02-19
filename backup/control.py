@@ -1,6 +1,12 @@
 from database import Database_conn as db
 from question import question as q
+from camera import video_server as vs
+from camera import flask_client as fc
 import random
+import threading
+from PIL import Image
+from io import BytesIO
+import time
 # from webcrawer import douban_webcrawer as dw
 
 
@@ -8,6 +14,12 @@ class control():
     def __init__(self):
         self.database = db.my_sql("readbook")
         self.user_id = self.get_all_user_id()
+        self.cp=fc.CaptureCam()
+        threading.Thread(target=self.cp.get).start()
+
+    def get_video(self):
+        return self.cp.get_image()
+
 
     def get_all_user_id(self):
         users = self.database.get_data("user")
@@ -221,3 +233,11 @@ class control():
 #         f.write(str(i[0])+" "+str(i[1])+"\n")
 # info= c.get_book_detail_info(183)
 # print(info)
+
+
+# [2,]
+
+# c=control()
+# while True:
+#     time.sleep(0.3)
+#     print(len(c.get_video()))
