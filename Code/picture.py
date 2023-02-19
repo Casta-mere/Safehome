@@ -6,32 +6,38 @@ import threading
 
 class pic:
     def __init__(self,ip,host):
+        self.ip=ip
+        self.host=host
         self.s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.s.bind((ip,host))
         self.s.listen(1)
         self.frame=None
-        self.conn,self.addr=self.s.accept()
 
     def receive(self):
+        self.conn,self.addr=self.s.accept()
+
         while True:
-            t=time.time()
-            data=b''
-            length_bytes=self.conn.recv(4)
-            length=int.from_bytes(length_bytes,'big')
-            #print(length)
-            while len(data)<length:
-                data+=self.conn.recv(1024)
-                if(length>3000000):
-                    print(len(data),length)
-                    break
-            #print(f'len data={len(data)}')
-            try:        
-                array=np.frombuffer(data,dtype=np.uint8)
-                frame=cv2.imdecode(array,cv2.IMREAD_COLOR)
-                yield frame
+            try:
+                data=b''
+                length_bytes=self.conn.recv(4)
+                length=int.from_bytes(length_bytes,'big')
+
+                while len(data)<length:
+                    data+=self.conn.recv(1024)
+                    if(length>3000000):
+                        print('tcp error! : data too long')
+                        break
+                try:
+                    array=np.frombuffer(data,dtype=np.uint8)
+                    frame=cv2.imdecode(array,cv2.IMREAD_COLOR)
+                    yield frame
+                except:
+                    pass
             except:
-                pass
-                
+                print(f"{self.ip}:{self.host} waiting for reconnect!\n")
+                time.sleep(1)
+                self.conn,self.addr=self.s.accept()
+            
     def gen_frames(self):
         for frame in self.receive():
             try:
@@ -40,7 +46,6 @@ class pic:
                 temp=(b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + data + b'\r\n')
                 if(self.frame!=temp):
                     self.frame=temp
-                    #print('new frame!')
             except:
                 pass
                 

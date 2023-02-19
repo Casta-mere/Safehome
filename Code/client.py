@@ -18,12 +18,12 @@ def send_data(cam_id, ip, host):
                 ret, frame = camera.read()
 
                 #  server
-                # frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
-                # encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),40]
+                frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
+                encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),40]
 
                 # local
-                frame = cv2.resize(frame, (0, 0), fx=0.9, fy=0.9)
-                encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+                # frame = cv2.resize(frame, (0, 0), fx=0.9, fy=0.9)
+                # encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
                 # convert to bytes and get length
                 encoded, buffer = cv2.imencode('.jpg', frame, encodepram)
@@ -33,13 +33,13 @@ def send_data(cam_id, ip, host):
                 s.send(length.to_bytes(4, 'big'))
                 # send data in 1024 bytes chunks each
                 if(flag):
-                    print(f"camera #{cam_id}-data-length:", length)
+                    print(f"camera #{cam_id}connected! data length:", length)
                     flag = False
                 for i in range(0, length, 1024):
                     s.send(data[i:i+1024])
                 time.sleep(0.1)
         except:
-            print(f"cam:{cam_id} waiting")
+            print(f"camera #:{cam_id} waiting")
             time.sleep(1)
 
 
