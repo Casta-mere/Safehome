@@ -22,8 +22,8 @@ def send_data(cam_id, ip, host):
                 # encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),50]
 
                 # local
-                frame = cv2.resize(frame, (0, 0), fx=0.9, fy=0.9)
-                encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+                frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+                encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 80]
 
                 # convert to bytes and get length
                 encoded, buffer = cv2.imencode('.jpg', frame, encodepram)

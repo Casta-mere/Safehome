@@ -11,7 +11,7 @@ class pic:
         self.s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
         self.s.bind((ip,host))
         self.s.listen(1)
-        self.frame=None
+        self.frame=error_fig()
 
     def receive(self):
         self.conn,self.addr=self.s.accept()
@@ -34,7 +34,8 @@ class pic:
                 except:
                     pass
             except:
-                print(f"{self.ip}:{self.host} waiting for reconnect!\n")
+                print(f"{self.ip}:{self.host} waiting for reconnect!\n",end="")
+                self.frame=error_fig()
                 time.sleep(1)
                 self.conn,self.addr=self.s.accept()
             
@@ -52,7 +53,11 @@ class pic:
     def get(self):
         while True:
             yield self.frame
-            
+
+
+def error_fig():
+        return b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + open('404.jpg','rb').read() + b'\r\n'
+
 def run(p):
     thread=[]
     t=threading.Thread(target=p.gen_frames)
