@@ -6,7 +6,7 @@ import threading
 
 def send_data(cam_id, ip, host):
     camera = cv2.VideoCapture(cam_id)
-    print(f"camera {cam_id} ready!")
+    print(f"camera #{cam_id} ready!")
     while True:
         try:
             # initialize socket
@@ -18,12 +18,12 @@ def send_data(cam_id, ip, host):
                 ret, frame = camera.read()
 
                 #  server
-                frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
-                encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),40]
+                # frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
+                # encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),50]
 
                 # local
-                # frame = cv2.resize(frame, (0, 0), fx=0.9, fy=0.9)
-                # encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+                frame = cv2.resize(frame, (0, 0), fx=0.9, fy=0.9)
+                encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
 
                 # convert to bytes and get length
                 encoded, buffer = cv2.imencode('.jpg', frame, encodepram)
@@ -33,7 +33,7 @@ def send_data(cam_id, ip, host):
                 s.send(length.to_bytes(4, 'big'))
                 # send data in 1024 bytes chunks each
                 if(flag):
-                    print(f"camera #{cam_id}connected! data length:", length)
+                    print(f"camera #{cam_id} connected! data length:", length)
                     flag = False
                 for i in range(0, length, 1024):
                     s.send(data[i:i+1024])
@@ -46,7 +46,10 @@ def send_data(cam_id, ip, host):
 # two cameras, each has a thread
 if __name__ == '__main__':
     thread = []
+    # local
     info = [[0, 'localhost', 8081], [1, 'localhost', 8082]]
+    
+    # server
     # info=[[0,'118.31.103.3',8081],[1,'118.31.103.3',8082]]
 
     for i in range(2):
