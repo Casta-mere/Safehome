@@ -1,6 +1,7 @@
 # 这是接收端的代码，需要运行在服务器上，并使用flask框架提供网页服务
 from flask import Flask, render_template, Response
 import picture as pc
+import alert as a
 
 # 创建一个Flask对象，用于处理网页请求和响应
 app = Flask(__name__)
@@ -39,6 +40,12 @@ def camera2():
 
 @app.route('/statistics')
 def statistics():
+    return render_template('profile.html')
+
+
+@app.route('/alert')
+def alert():
+    a.alert()
     return render_template('profile.html')
 
 @app.route('/video_feed_1')

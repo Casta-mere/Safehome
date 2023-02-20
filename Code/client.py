@@ -15,7 +15,7 @@ def send_data(cam_id, ip, host):
     width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
     size=(width, height)
-    out = cv2.VideoWriter(f'camera_{cam_id}_1.mp4', fourcc, fps, size)
+    out = cv2.VideoWriter(f'video\camera_{cam_id}_1.mp4', fourcc, fps, size)
     t=time.time()
     flag_save=True
     while True:
@@ -29,17 +29,20 @@ def send_data(cam_id, ip, host):
                 ret, frame = camera.read()
 
                 # save video
-                if(time.time()-t>20): 
+                if(time.time()-t>15): 
                     out.release()
+                    cv2.imwrite(f'picture\camera_{cam_id}.jpg', frame)
                     if flag_save:
-                        out = cv2.VideoWriter(f'camera_{cam_id}_1.mp4', fourcc, fps, size)
+                        out = cv2.VideoWriter(f'video\camera_{cam_id}_1.mp4', fourcc, fps, size)
                         flag_save=False
                     else:
-                        out = cv2.VideoWriter(f'camera_{cam_id}_2.mp4', fourcc, fps, size)
+                        out = cv2.VideoWriter(f'video\camera_{cam_id}_2.mp4', fourcc, fps, size)
                         flag_save=True
                     t=time.time()
                 out.write(frame)
-                
+
+                # save picture
+
                 #  server
                 frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
                 encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),40]
