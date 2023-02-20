@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import time
 import threading
+import json
 
 class pic:
     def __init__(self,ip,host):
@@ -58,9 +59,42 @@ class pic:
 def error_fig():
         return b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + open('404.jpg','rb').read() + b'\r\n'
 
+class state:
+    def __init__(self,ip,host):
+        self.ip=ip
+        self.host=host
+        self.s=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.s.bind((ip,host))
+        self.s.listen(1)
+        self.data=23
+        self.json_data={'temperature':23}
+
+    def receive(self):
+        self.conn,self.addr=self.s.accept()
+
+        while True:
+            try:
+                data=self.conn.recv(1024)
+                if(self.data!=data.decode() and data!=b''):
+                    self.data=data.decode()
+                    self.json_data['temperature']=self.data.split(":")[1].split("}")[0]
+            except:
+                print(f"{self.ip}:{self.host} waiting for reconnect!\n",end="")
+                time.sleep(1)
+                self.conn,self.addr=self.s.accept()
+        
+    def get(self):
+        return self.json_data
+
 def run(p):
     thread=[]
     t=threading.Thread(target=p.gen_frames)
+    thread.append(t)
+    t.start()
+
+def run_2(s):
+    thread=[]
+    t=threading.Thread(target=s.receive)
     thread.append(t)
     t.start()
 

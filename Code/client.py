@@ -18,12 +18,12 @@ def send_data(cam_id, ip, host):
                 ret, frame = camera.read()
 
                 #  server
-                # frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
-                # encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),50]
+                frame = cv2.resize(frame, (0, 0),fx=0.3, fy=0.3)
+                encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),30]
 
                 # local
-                frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
-                encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 80]
+                # frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+                # encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 80]
 
                 # convert to bytes and get length
                 encoded, buffer = cv2.imencode('.jpg', frame, encodepram)
@@ -39,24 +39,39 @@ def send_data(cam_id, ip, host):
                     s.send(data[i:i+1024])
                 time.sleep(0.1)
         except:
-            print(f"camera #:{cam_id} waiting")
+            print(f"camera #{cam_id} waiting")
             time.sleep(1)
 
+def send_state(data,ip,host):
+    while True:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((ip, host))
+            flag=True
+            while True:
+                if(flag):
+                    print(f"state transfer connected!")
+                    flag=False
+                s.send(data)
+                time.sleep(1)
+        except:
+            print(f"state transfer waiting")
+            time.sleep(1)
 
 # two cameras, each has a thread
 if __name__ == '__main__':
     thread = []
     # local
-    info = [[0, 'localhost', 8081], [1, 'localhost', 8082]]
+    # info = [[0, 'localhost', 8081], [1, 'localhost', 8082], [b'{"temperature":22}','localhost', 8083]]
     
     # server
-    # info=[[0,'118.31.103.3',8081],[1,'118.31.103.3',8082]]
+    info=[[0,'118.31.103.3',8081],[1,'118.31.103.3',8082], [b'{"temperature":22}','118.31.103.3', 8083]]
 
     for i in range(2):
-        thread.append(threading.Thread(target=send_data,
-                      args=(info[i][0], info[i][1], info[i][2])))
+        thread.append(threading.Thread(target=send_data,args=(info[i][0], info[i][1], info[i][2])))
+    thread.append(threading.Thread(target=send_state,args=(info[2][0],info[2][1], info[2][2])))
 
-    for i in range(2):
+    for i in range(3):
         thread[i].start()
 
     thread[i].join()
