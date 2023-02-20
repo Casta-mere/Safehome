@@ -15,7 +15,7 @@ def send_data(cam_id, ip, host):
     width = int(camera.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(camera.get(cv2.CAP_PROP_FRAME_HEIGHT))
     size=(width, height)
-    out = cv2.VideoWriter(f'camera_{cam_id}_1.mp4', fourcc, fps, size)
+    out = cv2.VideoWriter(f'video\camera_{cam_id}_1.mp4', fourcc, fps, size)
     t=time.time()
     flag_save=True
     while True:
@@ -32,21 +32,21 @@ def send_data(cam_id, ip, host):
                 if(time.time()-t>20): 
                     out.release()
                     if flag_save:
-                        out = cv2.VideoWriter(f'camera_{cam_id}_1.mp4', fourcc, fps, size)
+                        out = cv2.VideoWriter(f'video\camera_{cam_id}_1.mp4', fourcc, fps, size)
                         flag_save=False
                     else:
-                        out = cv2.VideoWriter(f'camera_{cam_id}_2.mp4', fourcc, fps, size)
+                        out = cv2.VideoWriter(f'video\camera_{cam_id}_2.mp4', fourcc, fps, size)
                         flag_save=True
                     t=time.time()
                 out.write(frame)
                 
                 #  server
-                frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
-                encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),40]
+                # frame = cv2.resize(frame, (0, 0),fx=0.4, fy=0.4)
+                # encodepram=[int(cv2.IMWRITE_JPEG_QUALITY),40]
 
                 # local
-                # frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
-                # encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 80]
+                frame = cv2.resize(frame, (0, 0), fx=0.8, fy=0.8)
+                encodepram = [int(cv2.IMWRITE_JPEG_QUALITY), 80]
 
                 # convert to bytes and get length
                 encoded, buffer = cv2.imencode('.jpg', frame, encodepram)
@@ -85,10 +85,10 @@ def send_state(data,ip,host):
 if __name__ == '__main__':
     thread = []
     # local
-    # info = [[0, 'localhost', 8081], [1, 'localhost', 8082], [b'{"temperature":22}','localhost', 8083]]
+    info = [[0, 'localhost', 8081], [1, 'localhost', 8082], [b'{"temperature":22}','localhost', 8083]]
     
     # server
-    info=[[0,'118.31.103.3',8081],[1,'118.31.103.3',8082], [b'{"temperature":22}','118.31.103.3', 8083]]
+    # info=[[0,'118.31.103.3',8081],[1,'118.31.103.3',8082], [b'{"temperature":22}','118.31.103.3', 8083]]
 
     for i in range(2):
         thread.append(threading.Thread(target=send_data,args=(info[i][0], info[i][1], info[i][2])))
